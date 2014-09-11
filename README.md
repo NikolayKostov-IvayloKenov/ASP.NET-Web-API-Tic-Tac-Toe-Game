@@ -32,12 +32,8 @@ Tic-Tac-Toe game services written in ASP.NET Web API using Entity Framewor Code-
 9. Fix connection string and show the database schema to the nerds
 
 10. Create game models
-
-```csharp
-Game { Guid Id, [StringLength(9)][Column(TypeName = "char")]Board, GameState State, [Required]string FirstPlayerId, ApplicationUser FirstPlayer, string SecondPlayerId, ApplicationUser SecondPlayer } + default constructor
-GameState { WaitingForSecondPlayer, TurnX, TurnY, GameWonByX, GameWonByO, GameDraw }
-```
-
+    Game { Guid Id, [StringLength(9)][Column(TypeName = "char")]Board, GameState State, [Required]string FirstPlayerId, ApplicationUser FirstPlayer, string SecondPlayerId, ApplicationUser SecondPlayer } + default constructor
+    GameState { WaitingForSecondPlayer, TurnX, TurnY, GameWonByX, GameWonByO, GameDraw }
 	Create `DbSet<Game>` in the `ApplicationDbContext`
 
 11. Create repositories
@@ -53,24 +49,20 @@ GameState { WaitingForSecondPlayer, TurnX, TurnY, GameWonByX, GameWonByO, GameDr
 14. Introduce dependency container (Ninject)
 	* install `Ninject.Web.WebApi.OwinHost` package
 	* Add to Startup.Configuration `app.UseNinjectMiddleware(CreateKernel).UseNinjectWebApi(GlobalConfiguration.Configuration);`
-	*     
-
-```
-private static StandardKernel CreateKernel()
-{
-	var kernel = new StandardKernel();
-	kernel.Load(Assembly.GetExecutingAssembly());
-
-	BindTypes(kernel);
-
-	return kernel;
-}
-
-private static void BindTypes(StandardKernel kernel)
-{
-	kernel.Bind<ITicTacToeData>().To<TicTacToeData>().WithConstructorArgument("context", c => new ApplicationDbContext());
-}
-```
+    private static StandardKernel CreateKernel()
+    {
+    	var kernel = new StandardKernel();
+    	kernel.Load(Assembly.GetExecutingAssembly());
+    
+    	BindTypes(kernel);
+    
+    	return kernel;
+    }
+    
+    private static void BindTypes(StandardKernel kernel)
+    {
+    	kernel.Bind<ITicTacToeData>().To<TicTacToeData>().WithConstructorArgument("context", c => new ApplicationDbContext());
+    }
 
 15. Remove empty constructor from `GameController` and test DI
 
