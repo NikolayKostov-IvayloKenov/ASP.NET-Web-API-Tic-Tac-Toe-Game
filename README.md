@@ -32,6 +32,7 @@ Tic-Tac-Toe game services written in ASP.NET Web API using Entity Framewor Code-
 9. Fix connection string and show the database schema to the nerds
 
 10. Create game models
+
 ```
 Game { Guid Id, [StringLength(9)][Column(TypeName = "char")]Board, GameState State, [Required]string FirstPlayerId, ApplicationUser FirstPlayer, string SecondPlayerId, ApplicationUser SecondPlayer } + default constructor
 GameState { WaitingForSecondPlayer, TurnX, TurnY, GameWonByX, GameWonByO, GameDraw }
@@ -52,6 +53,7 @@ GameState { WaitingForSecondPlayer, TurnX, TurnY, GameWonByX, GameWonByO, GameDr
 	* install `Ninject.Web.WebApi.OwinHost` package
 	* Add to Startup.Configuration `app.UseNinjectMiddleware(CreateKernel).UseNinjectWebApi(GlobalConfiguration.Configuration);`
 	*     
+
 ```
 private static StandardKernel CreateKernel()
 {
