@@ -33,11 +33,11 @@ Tic-Tac-Toe game services written in ASP.NET Web API using Entity Framewor Code-
 
 10. Create game models
 
-```
+```csharp
 Game { Guid Id, [StringLength(9)][Column(TypeName = "char")]Board, GameState State, [Required]string FirstPlayerId, ApplicationUser FirstPlayer, string SecondPlayerId, ApplicationUser SecondPlayer } + default constructor
 GameState { WaitingForSecondPlayer, TurnX, TurnY, GameWonByX, GameWonByO, GameDraw }
 ```
-	Create DbSet<Game> in the ApplicationDbContext
+	Create `DbSet<Game>` in the `ApplicationDbContext`
 
 11. Create repositories
 	`IRepository` -> All, GetById, Add, Update, Delete, Delete(id), SaveChanges
