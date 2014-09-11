@@ -9,6 +9,8 @@
 
     using Antlr.Runtime.Tree;
 
+    using AutoMapper.QueryableExtensions;
+
     using Microsoft.AspNet.Identity;
 
     using TicTacToe.Data;
@@ -36,17 +38,8 @@
             var gameDataModel =
                 this.data.Games.All()
                     .Where(x => x.Id == game.Id)
-                    .Select(
-                        x =>
-                        new GameInfoDataModel
-                            {
-                                Id = x.Id,
-                                Board = x.Board,
-                                FirstPlayerName = x.FirstPlayer.UserName,
-                                SecondPlayerName =
-                                    x.SecondPlayer == null ? null : x.SecondPlayer.UserName,
-                                State = x.State.ToString(),
-                            })
+                    .Project()
+                    .To<GameInfoDataModel>()
                     .FirstOrDefault();
 
             return this.Ok(gameDataModel);
@@ -73,17 +66,8 @@
             var gameDataModel =
                 this.data.Games.All()
                     .Where(x => x.Id == firstAvailableGame.Id)
-                    .Select(
-                        x =>
-                        new GameInfoDataModel
-                            {
-                                Id = x.Id,
-                                Board = x.Board,
-                                FirstPlayerName = x.FirstPlayer.UserName,
-                                SecondPlayerName =
-                                    x.SecondPlayer == null ? null : x.SecondPlayer.UserName,
-                                State = x.State.ToString(),
-                            })
+                    .Project()
+                    .To<GameInfoDataModel>()
                     .FirstOrDefault();
 
             return this.Ok(gameDataModel);
@@ -103,17 +87,8 @@
             var gameDataModel =
                 this.data.Games.All()
                     .Where(x => x.Id == gameIdAsGuid && (x.FirstPlayerId == userId || x.SecondPlayerId == userId))
-                    .Select(
-                        x =>
-                        new GameInfoDataModel
-                            {
-                                Id = x.Id,
-                                Board = x.Board,
-                                FirstPlayerName = x.FirstPlayer.UserName,
-                                SecondPlayerName =
-                                    x.SecondPlayer == null ? null : x.SecondPlayer.UserName,
-                                State = x.State.ToString(),
-                            })
+                    .Project()
+                    .To<GameInfoDataModel>()
                     .FirstOrDefault();
 
             if (gameDataModel == null)
@@ -124,15 +99,8 @@
             return this.Ok(gameDataModel);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="gameId"></param>
-        /// <param name="row">1, 2 or 3</param>
-        /// <param name="col">1, 2 or 3</param>
-        /// <returns></returns>
         [HttpPost]
-        public IHttpActionResult Play([Required]string gameId, [Range(1, 3)]int row, [Range(1, 3)]int col)
+        public IHttpActionResult Play([FromUri]PlayRequestDataModel request)
         {
             var userId = User.Identity.GetUserId();
 
@@ -141,7 +109,7 @@
                 return this.BadRequest(this.ModelState);
             }
 
-            var gameIdAsGuid = new Guid(gameId);
+            var gameIdAsGuid = new Guid(request.GameId);
             var game =
                 this.data.Games.All()
                     .FirstOrDefault(
@@ -163,10 +131,10 @@
                 return this.BadRequest(string.Format("It's not your turn!"));
             }
 
-            int positionIndex = ((row - 1) * 3) + col - 1;
+            int positionIndex = ((request.Row - 1) * 3) + request.Col - 1;
             if (game.Board[positionIndex] != '-')
             {
-                return this.BadRequest("This position is already taken. Please chose different one.");
+                return this.BadRequest("This position is already taken. Please choose a different one.");
             }
 
             var board = new StringBuilder(game.Board);
@@ -194,17 +162,8 @@
             var gameDataModel =
                 this.data.Games.All()
                     .Where(x => x.Id == gameIdAsGuid && (x.FirstPlayerId == userId || x.SecondPlayerId == userId))
-                    .Select(
-                        x =>
-                        new GameInfoDataModel
-                        {
-                            Id = x.Id,
-                            Board = x.Board,
-                            FirstPlayerName = x.FirstPlayer.UserName,
-                            SecondPlayerName =
-                                x.SecondPlayer == null ? null : x.SecondPlayer.UserName,
-                            State = x.State.ToString(),
-                        })
+                    .Project()
+                    .To<GameInfoDataModel>()
                     .FirstOrDefault();
 
             return this.Ok(gameDataModel);
@@ -217,7 +176,7 @@
             {
                 int row = i / 3;
                 int col = i % 3;
-                board[i / 3, i % 3] = boardAsString[i];
+                board[row, col] = boardAsString[i];
             }
 
             //// TODO: Implement Check if the game is won by X or O player
