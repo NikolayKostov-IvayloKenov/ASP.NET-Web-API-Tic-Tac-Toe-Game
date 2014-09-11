@@ -1,4 +1,4 @@
-ASP.NET-Web-API-Tic-Tac-Toe-Game
+ASP.NET Web API Tic-Tac-Toe Game
 ================================
 
 Tic-Tac-Toe game services written in ASP.NET Web API using Entity Framewor Code-First, Repository pattern, Unit of work pattern, Ninject and AutoMapper
@@ -12,44 +12,48 @@ Tic-Tac-Toe game services written in ASP.NET Web API using Entity Framewor Code-
 2. Show the code + edit user password requirements
 
 3. Register user (POST to /api/Account/Register)
-	Email,Password,ConfirmPassword
+	`Email,Password,ConfirmPassword`
 
 4. User login WebAPI (POST to /Token)
-	grant_type=password,username,password
+	`grant_type=password,username,password`
 
 5. Next calls (GET /api/Values)
-	Add header "Authorization" with value "Bearer [access_token]"
+	Add header `Authorization` with value `Bearer [access_token]`
 
-6. Create TicTacToe.Models and TicTacToe.Data and add EntityFramework and Microsoft.AspNet.Identity.EntityFramework
+6. Create `TicTacToe.Models` and `TicTacToe.Data` and add `EntityFramework` and `Microsoft.AspNet.Identity.EntityFramework`
 
 7. Move ApplicationDbContext and ApplicationUser to the corresponding libraries and fix usings
 
 8. Create migration for the context
-	NuGet package console: "Enable-Migrations"
-	Set AutomaticMigrationsEnabled to true
-	Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Configuration>());
+	NuGet package console: `Enable-Migrations`
+	Set `AutomaticMigrationsEnabled` to true
+	`Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Configuration>());`
 
 9. Fix connection string and show the database schema to the nerds
 
 10. Create game models
-	* Game { Guid Id, [StringLength(9)][Column(TypeName = "char")]Board, GameState State, [Required]string FirstPlayerId, ApplicationUser FirstPlayer, string SecondPlayerId, ApplicationUser SecondPlayer } + default constructor
+	```
+* Game { Guid Id, [StringLength(9)][Column(TypeName = "char")]Board, GameState State, [Required]string FirstPlayerId, ApplicationUser FirstPlayer, string SecondPlayerId, ApplicationUser SecondPlayer } + default constructor
 	* GameState { WaitingForSecondPlayer, TurnX, TurnY, GameWonByX, GameWonByO, GameDraw }
 	Create DbSet<Game> in the ApplicationDbContext
+	```
 
 11. Create repositories
-	IRepository -> All, GetById, Add, Update, Delete, Delete(id), SaveChanges
-	EfRepository -> Implementation using DbContext
-	MemoryRepository -> For Id: obj.GetType().GetProperty("Id").GetValue(obj);
+	`IRepository` -> All, GetById, Add, Update, Delete, Delete(id), SaveChanges
+	`EfRepository` -> Implementation using DbContext
+	`MemoryRepository` -> For Id: obj.GetType().GetProperty("Id").GetValue(obj);
 
 12. Unit of work
-	Create ITicTacToeData and TicTacToeData with IRepository<ApplicationUser> and IRepository<Game>
+	Create `ITicTacToeData` and `TicTacToeData` with `IRepository<ApplicationUser>` and `IRepository<Game>`
 
-13. Create GameController with simple GetUsersCount action to display number of users in the database using the unit of work instance
+13. Create `GameController` with simple `GetUsersCount` action to display number of users in the database using the unit of work instance
 
 14. Introduce dependency container (Ninject)
-	* install Ninject.Web.WebApi.OwinHost package
-	* Add to Startup.Configuration app.UseNinjectMiddleware(CreateKernel).UseNinjectWebApi(GlobalConfiguration.Configuration);
-	*   private static StandardKernel CreateKernel()
+	* install `Ninject.Web.WebApi.OwinHost` package
+	* Add to Startup.Configuration `app.UseNinjectMiddleware(CreateKernel).UseNinjectWebApi(GlobalConfiguration.Configuration);`
+	*     
+```
+private static StandardKernel CreateKernel()
 		{
 			var kernel = new StandardKernel();
 			kernel.Load(Assembly.GetExecutingAssembly());
@@ -63,6 +67,7 @@ Tic-Tac-Toe game services written in ASP.NET Web API using Entity Framewor Code-
 		{
 			kernel.Bind<ITicTacToeData>().To<TicTacToeData>().WithConstructorArgument("context", c => new ApplicationDbContext());
 		}
+```
 
 15. Remove empty constructor from GameController and test DI
 
