@@ -32,9 +32,9 @@ Tic-Tac-Toe game services written in ASP.NET Web API using Entity Framewor Code-
 9. Fix connection string and show the database schema to the nerds
 
 10. Create game models
-	```
-* Game { Guid Id, [StringLength(9)][Column(TypeName = "char")]Board, GameState State, [Required]string FirstPlayerId, ApplicationUser FirstPlayer, string SecondPlayerId, ApplicationUser SecondPlayer } + default constructor
-	* GameState { WaitingForSecondPlayer, TurnX, TurnY, GameWonByX, GameWonByO, GameDraw }
+```
+Game { Guid Id, [StringLength(9)][Column(TypeName = "char")]Board, GameState State, [Required]string FirstPlayerId, ApplicationUser FirstPlayer, string SecondPlayerId, ApplicationUser SecondPlayer } + default constructor
+GameState { WaitingForSecondPlayer, TurnX, TurnY, GameWonByX, GameWonByO, GameDraw }
 	Create DbSet<Game> in the ApplicationDbContext
 	```
 
@@ -54,36 +54,36 @@ Tic-Tac-Toe game services written in ASP.NET Web API using Entity Framewor Code-
 	*     
 ```
 private static StandardKernel CreateKernel()
-		{
-			var kernel = new StandardKernel();
-			kernel.Load(Assembly.GetExecutingAssembly());
-		
-			BindTypes(kernel);
-		
-			return kernel;
-		}
-		
-		private static void BindTypes(StandardKernel kernel)
-		{
-			kernel.Bind<ITicTacToeData>().To<TicTacToeData>().WithConstructorArgument("context", c => new ApplicationDbContext());
-		}
+{
+	var kernel = new StandardKernel();
+	kernel.Load(Assembly.GetExecutingAssembly());
+
+	BindTypes(kernel);
+
+	return kernel;
+}
+
+private static void BindTypes(StandardKernel kernel)
+{
+	kernel.Bind<ITicTacToeData>().To<TicTacToeData>().WithConstructorArgument("context", c => new ApplicationDbContext());
+}
 ```
 
-15. Remove empty constructor from GameController and test DI
+15. Remove empty constructor from `GameController` and test DI
 
-16. Create GameInfoDataModel
+16. Create `GameInfoDataModel`
 
-17. Change routeTemplate to "api/{controller}/{action}/{id}"
+17. Change routeTemplate to `api/{controller}/{action}/{id}`
 
-18. Write Create game action (POST)
+18. Write `Create` game action (POST)
 
-19. Write Join game action (POST)
+19. Write `Join` game action (POST)
 	* Prevent the same user to join his own game
 
-20. Write Status game action (GET: gameId)
+20. Write `Status` game action (GET: gameId)
 	* Return info for the games played by the current player
 
-21. Write Play game action (POST: gameId, row, col)
+21. Write `Play` game action (POST: gameId, row, col)
 	* Create PlayRequestDataModel ([Required]string gameId, [Range(1, 3)]int row, [Range(1, 3)]int col)
 	* Write play action and check if model state is valid: if (!ModelState.IsValid) { return this.BadRequest(this.ModelState); }
 	* var positionIndex = (row - 1) * 3 + col - 1
@@ -91,13 +91,14 @@ private static StandardKernel CreateKernel()
 
 22. Write method to check if the game has ended
 
-23. Extract BaseApiController with constructor with ITicTacToeData
+23. Extract `BaseApiController` with constructor with `ITicTacToeData`
 
 24. Add AutoMapper
-	* Add AutoMapper NuGet package
-	* public interface IMapFrom<T> { }
-	* public interface IHaveCustomMappings { void CreateMappings(IConfiguration configuration); }
-	*   public class AutoMapperConfig
+	* Add `AutoMapper` NuGet package
+	* public interface `IMapFrom<T> { }`
+	* public interface `IHaveCustomMappings { void CreateMappings(IConfiguration configuration); }`
+```
+public class AutoMapperConfig
 		{
 			public void Execute()
 			{
@@ -136,8 +137,10 @@ private static StandardKernel CreateKernel()
 				}
 			}
 		}
-	* Add it to Application_Start()
-	* Add Custom mapping for GameInfoDataModel
+```
+	* Add it to `Application_Start()`
+	* Add Custom mapping for `GameInfoDataModel`
+```
 		public void CreateMappings(IConfiguration configuration)
 		{
 			configuration.CreateMap<Game, GameInfoDataModel>()
@@ -148,3 +151,4 @@ private static StandardKernel CreateKernel()
 	* Use the mapping
 		.Project()
 		.To<GameInfoDataModel>()
+```
